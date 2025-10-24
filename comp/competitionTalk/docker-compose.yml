@@ -1,0 +1,55 @@
+#version: "1.0"
+
+services:
+  mysql:
+    container_name: mysql
+    build: 
+      context: ./MySQL 
+      dockerfile: mysql.dockerfile
+    restart: unless-stopped
+    env_file:
+     - .envdb
+    networks:
+      - backend
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_logs:/var/log/mysql
+      - mysql_files:/var/lib/mysql-files
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  hr:
+    build:
+      context: ./FlaskBackend
+      dockerfile: flask.dockerfile
+    container_name: hr
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    env_file:
+     - .envapi
+    networks:
+     - backend
+  tester:
+    build:
+      context: ./VulnerableApp
+      dockerfile: vuln.dockerfile
+    container_name: tester
+    restart: unless-stopped
+    env_file:
+     - .envapi
+    networks:
+     backend: {}
+    depends_on:
+      - mysql
+
+networks:
+  backend:
+    driver: bridge
+volumes:
+  mysql_data:
+  mysql_files:
+  mysql_logs:

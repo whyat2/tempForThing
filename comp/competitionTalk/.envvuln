@@ -1,0 +1,6 @@
+# MySQL settings
+MYSQL_HOST=mysql
+MYSQL_USER=app2_user
+MYSQL_PASSWORD=app2_pass
+MYSQL_DB=app2_db
+MYSQL_PORT=3306

@@ -1,0 +1,20 @@
+[mysqld]
+# General
+#skip-host-cache
+#skip-name-resolve
+datadir=/var/lib/mysql
+socket=/var/run/mysqld/mysqld.sock
+user=mysql
+
+# Enable audit plugin
+plugin_load_add = audit_log.so
+audit_log_policy = ALL
+audit_log_format = NEW
+audit_log_strategy = ASYNCHRONOUS
+audit_log_rotate_on_size = 10485760
+audit_log_file = /var/log/mysql/audit.log
+
+# Filter to log both connections and queries
+# CONNECTION: logins/logouts
+# DML: inserts, updates, deletes, selects
+audit_log_events = CONNECTION,DML
